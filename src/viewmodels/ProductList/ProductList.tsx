@@ -1,33 +1,17 @@
-import { useEffect, useState } from "react";
-import { Product } from "../../types/products";
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { fetchProductListThunk } from "../../store/slices/products/thunks";
 
 const useProductList = () => {
-    const [products, setProducts] = useState([] as Product[]);
-
+    const dispatch = useAppDispatch();
     useEffect(() => {
-        setProducts([
-            {
-                name: "Example product",
-                description: "Lorem ipsum",
-                id: "512411",
-                price: 10000,
-            },
-            {
-                name: "Example product",
-                description: "Lorem ipsum",
-                id: "512412",
-                price: 10000,
-            },
-            {
-                name: "Example product",
-                description: "Lorem ipsum",
-                id: "512413",
-                price: 10000,
-            },
-        ]);
-    }, []);
+        dispatch(fetchProductListThunk());
+    }, [dispatch]);
+
+    const { products } = useAppSelector((state) => state.products);
 
     return {
+        status: "success",
         products,
     };
 };
