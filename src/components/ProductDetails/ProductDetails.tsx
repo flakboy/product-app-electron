@@ -1,7 +1,8 @@
 import { Link, useParams } from "react-router";
 import { useProductDetails } from "../../viewmodels/ProductDetails/ProductDetails";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { addProduct } from "../../store/cartslice";
+import { addProductThunk } from "../../store/slices/cart/thunks";
+
 import { useState } from "react";
 import s from "./ProductDetails.module.css";
 import { formatCurrency } from "../../utils/currency";
@@ -58,7 +59,7 @@ export default function ProductDetails() {
                                     }
                                     onClick={() => {
                                         dispatch(
-                                            addProduct({
+                                            addProductThunk({
                                                 ...details,
                                                 amount: count,
                                             })

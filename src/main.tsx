@@ -6,6 +6,9 @@ import { RouterProvider } from "react-router";
 
 import { Provider } from "react-redux";
 import store from "./store/store.ts";
+import { fetchCartThunk } from "./store/slices/cart/thunks.ts";
+
+store.dispatch(fetchCartThunk());
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>

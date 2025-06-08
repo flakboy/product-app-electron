@@ -1,11 +1,12 @@
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { CartItem, CartItemMap } from "../../types/cart";
+import { Link } from "react-router";
 
-import { removeProduct } from "../../store/cartslice";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { removeProductThunk } from "../../store/slices/cart/thunks";
+
+import { CartItem, CartItemMap } from "../../types/cart";
 
 import s from "./Cart.module.css";
 import { formatCurrency } from "../../utils/currency";
-import { Link } from "react-router";
 
 export default function Cart() {
     const cart: CartItemMap = useAppSelector((state) => state.cart.products);
@@ -27,17 +28,15 @@ export default function Cart() {
                                 {formatCurrency(item.price)}
                             </p>
                             <span>
-                                {" "}
                                 <Link to={`/products/${item.id}`}>
-                                    {" "}
-                                    Details &gt;{" "}
+                                    Details &gt;
                                 </Link>
                             </span>
                         </div>
                         <div>
                             <button
                                 onClick={() => {
-                                    dispatch(removeProduct(item.id));
+                                    dispatch(removeProductThunk(item.id));
                                 }}
                             >
                                 Remove from cart
