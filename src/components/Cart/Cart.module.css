@@ -1,0 +1,22 @@
+.cartList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.cartItem {
+    display: flex;
+    flex-direction: row;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.4rem;
+    padding: 0.8rem;
+    justify-content: space-between;
+}
+
+.cartItemLabel {
+    font-weight: bold;
+    font-size: 1.2rem;
+    align-self: baseline;
+}

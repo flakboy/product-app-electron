@@ -1,0 +1,36 @@
+.buyPrice {
+    display: block;
+    font-weight: bold;
+}
+
+.buyWrapper {
+    border: var(--border-main);
+    border-radius: var(--border-radius-2);
+    padding: var(--space-2);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.buyInput {
+    border: var(--border-main);
+    border-radius: var(--border-radius-2);
+    height: 2.4rem;
+    text-align: center;
+}
+
+.buyButtonWrapper {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-1);
+    align-items: center;
+}
+
+.buyButton {
+    background-color: green;
+    height: 2.4rem;
+}
+
+.buyButton:disabled {
+    background-color: grey;
+}
