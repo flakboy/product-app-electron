@@ -1,9 +1,9 @@
 import { app, BrowserWindow } from "electron";
-import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
-const require = createRequire(import.meta.url);
+// import { createRequire } from "node:module";
+// const require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // The built directory structure
@@ -53,6 +53,8 @@ function createWindow() {
     }
 }
 
+app.setName("product-app-ztp");
+
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
@@ -72,5 +74,25 @@ app.on("activate", () => {
 });
 
 (async () => {
-    app.whenReady().then(createWindow);
+    // const config = await getConfig("config.ini");
+    // if (!config.cache_directory) {
+    //     throw new Error(
+    //         "Missing value for cache_directory. Check config.ini file."
+    //     );
+    // }
+
+    // const userprofile = process.env["USERPROFILE"];
+    // if (!userprofile) {
+    //     throw new Error("Failed to get user directory path.");
+    // }
+    // const cachePath = path.resolve(userprofile, ".product-app\\cache.db");
+    // var dir = path.dirname(cachePath);
+    // if (!existsSync(dir)) {
+    //     mkdirSync(dir, { recursive: true });
+    // }
+    // const cacheManager = new SqliteCacheManager(cachePath);
+
+    app.whenReady().then(async () => {
+        createWindow();
+    });
 })();
