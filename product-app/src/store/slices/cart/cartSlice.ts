@@ -1,13 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { CartItemMap } from "../../../types/cart";
 import { addProductThunk, fetchCartThunk, removeProductThunk } from "./thunks";
-
-type CartSliceState = {
-    products: CartItemMap;
-};
+import { CartSliceState } from "./types";
 
 const initialState: CartSliceState = {
     products: {},
+    user: "johndoe",
+    cartId: null,
 };
 
 const cartSlice = createSlice({
@@ -19,7 +17,8 @@ const cartSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(fetchCartThunk.fulfilled, (state, action) => {
-                state.products = action.payload;
+                state.products = action.payload.products;
+                state.cartId = action.payload.cartId;
             })
             .addCase(addProductThunk.fulfilled, (state, action) => {
                 state.products = {

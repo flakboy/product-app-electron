@@ -4,7 +4,6 @@ import {
     getCachedProductList,
     setCachedProductList,
 } from "../../../utils/cache";
-import { sleep } from "../../../utils/sleep";
 import { GATEWAY_URL } from "../../../consts/api";
 
 export const fetchProductListThunk = createAsyncThunk(

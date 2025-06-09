@@ -10,6 +10,11 @@ import { fetchCartThunk } from "./store/slices/cart/thunks.ts";
 
 store.dispatch(fetchCartThunk());
 
+const CART_REFRESH_TIMEOUT = 60 * 1000;
+setInterval(() => {
+    store.dispatch(fetchCartThunk());
+}, CART_REFRESH_TIMEOUT);
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
         <Provider store={store}>
