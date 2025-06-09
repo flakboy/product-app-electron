@@ -9,7 +9,7 @@ export class ProductModel {
         return {
             name: "Lenovo Thinkpad 212321",
             id: "12312311",
-            price: 100000,
+            unitPrice: 100000,
             description: "Lorem ipsum dolor sit amet",
             amount: 100,
         };

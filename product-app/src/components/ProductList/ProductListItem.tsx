@@ -15,7 +15,7 @@ export default function ProductListItem({ product }: ProductListItemProps) {
                         <span>{product.name}</span>
                     </div>
                     <div>
-                        <span>{formatCurrency(product.price)}</span>
+                        <span>{formatCurrency(product.unitPrice)}</span>
                     </div>
                 </div>
             </Link>

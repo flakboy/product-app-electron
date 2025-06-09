@@ -1,5 +1,5 @@
 import { CartItem, CartItemMap } from "../types/cart";
-import { ProductId } from "../types/products";
+import { Product, ProductId } from "../types/products";
 
 const CART_CACHE_KEY = "cart";
 const PRODUCT_LIST_CACHE_KEY = "products";
@@ -11,7 +11,11 @@ export function getCachedCart(): CartItemMap {
     return cached ? JSON.parse(cached) : {};
 }
 
-export function addProductToCache(product: CartItem) {
+export function setCachedCart(cartProducts: CartItemMap) {
+    localStorage.setItem(CART_CACHE_KEY, JSON.stringify(cartProducts));
+}
+
+export function addCachedCartProduct(product: CartItem) {
     let cart = getCachedCart();
 
     cart[product.id] = product;
@@ -19,7 +23,7 @@ export function addProductToCache(product: CartItem) {
     localStorage.setItem(CART_CACHE_KEY, JSON.stringify(cart));
 }
 
-export function removeProductFromCache(productId: ProductId) {
+export function removeCachedCartProduct(productId: ProductId) {
     let cart = getCachedCart();
 
     delete cart[productId];
@@ -27,14 +31,14 @@ export function removeProductFromCache(productId: ProductId) {
     localStorage.setItem(CART_CACHE_KEY, JSON.stringify(cart));
 }
 
-export function setCachedProductList(products: CartItemMap) {
+export function setCachedProductList(products: Product[]) {
     localStorage.setItem(PRODUCT_LIST_CACHE_KEY, JSON.stringify(products));
 }
 
-export function getCachedProductList(): CartItemMap {
+export function getCachedProductList(): Product[] {
     const cached = localStorage.getItem(PRODUCT_LIST_CACHE_KEY);
 
-    return cached ? JSON.parse(cached) : {};
+    return cached ? JSON.parse(cached) : [];
 }
 
 export function getCachedCartId(): string | null {

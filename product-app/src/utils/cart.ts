@@ -1,5 +1,5 @@
 import { GATEWAY_URL } from "../consts/api";
-import { CartItemMap } from "../types/cart";
+import { CartItem, CartItemMap } from "../types/cart";
 
 export type CartProductResponse = {
     status: "sucess";
@@ -30,4 +30,11 @@ export function getCartProducts(cartId: string): Promise<Response> {
     return fetch(`${GATEWAY_URL}/carts/${cartId}`);
 }
 
-export function addProductToCart() {}
+export function addProductToCart(cartId: string, cartItem: CartItem) {
+    const { unitPrice: price, amount, id } = cartItem;
+    return fetch(`${GATEWAY_URL}/carts/${cartId}/products`, {
+        method: "POST",
+        headers: new Headers({ "content-type": "application/json" }),
+        body: JSON.stringify({ price, amount, id }),
+    });
+}
