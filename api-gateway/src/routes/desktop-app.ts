@@ -16,8 +16,9 @@ type Product = {
 };
 
 const AddProductRequestValidator = z.object({
-    productId: z.string(),
+    id: z.string(),
     amount: z.number(),
+    price: z.number(),
 });
 
 type AddProductRequestSchema = z.infer<typeof AddProductRequestValidator>;
@@ -172,6 +173,7 @@ export function createDesktopAppRouter() {
 
     router.post("/carts/:id/products", async (req, res, next) => {
         try {
+            console.log(req.body);
             AddProductRequestValidator.parse(req.body);
         } catch {
             res.status(400).json({
@@ -197,6 +199,8 @@ export function createDesktopAppRouter() {
 
                 return;
             }
+
+            console.log(data);
 
             res.json({
                 status: "sucess",

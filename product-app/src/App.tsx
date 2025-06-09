@@ -1,11 +1,8 @@
 import { Link, Outlet } from "react-router";
 import clsx from "clsx";
 import s from "./App.module.css";
-import { useOnlineStatus } from "./hooks/useOnlineStatus";
 
 function App() {
-    const onlineStatus = useOnlineStatus();
-
     return (
         <>
             <nav className={clsx(s.nav)}>
@@ -16,12 +13,12 @@ function App() {
                     <Link to="/cart"> Cart </Link>
                 </div>
             </nav>
-            {!onlineStatus ? (
+            {/* {!onlineStatus ? (
                 <div>
                     You are currently offline. Connect to the Internet in order
                     to synchronize your cart.
                 </div>
-            ) : null}
+            ) : null} */}
             <div className={clsx(s.main)}>
                 <Outlet />
             </div>
