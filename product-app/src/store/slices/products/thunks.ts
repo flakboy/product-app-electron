@@ -5,36 +5,15 @@ import {
     setCachedProductList,
 } from "../../../utils/cache";
 import { sleep } from "../../../utils/sleep";
+import { GATEWAY_URL } from "../../../consts/api";
 
 export const fetchProductListThunk = createAsyncThunk(
     "products/fetchList",
     async (): Promise<Product[]> => {
         try {
-            // const response = await fetch("...").then((res) => res.json());
-            //TODO: remove the sleep call
-            sleep(5000);
-            const response = {
-                data: [
-                    {
-                        name: "Example product",
-                        description: "Lorem ipsum",
-                        id: "512411",
-                        price: 10000,
-                    },
-                    {
-                        name: "Example product",
-                        description: "Lorem ipsum",
-                        id: "512412",
-                        price: 10000,
-                    },
-                    {
-                        name: "Example product",
-                        description: "Lorem ipsum",
-                        id: "512413",
-                        price: 10000,
-                    },
-                ],
-            };
+            const response = await fetch(`${GATEWAY_URL}/products`, {
+                mode: "cors",
+            }).then((res) => res.json());
 
             setCachedProductList(response.data);
             return response.data;
