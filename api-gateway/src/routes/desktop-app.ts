@@ -1,6 +1,6 @@
-import { Router, Request, Response } from "express";
+import { Router, json as expressJson } from "express";
 import { CART_API_HOST, PRODUCT_API_HOST } from "../consts";
-import { number, z } from "zod";
+import { z } from "zod";
 
 import cors from "cors";
 
@@ -15,10 +15,61 @@ type Product = {
     reservations: any[];
 };
 
+const AddProductRequestValidator = z.object({
+    productId: z.string(),
+    amount: z.number(),
+});
+
+type AddProductRequestSchema = z.infer<typeof AddProductRequestValidator>;
+
 export function createDesktopAppRouter() {
     const router = Router();
 
     router.use(cors());
+    router.use(expressJson());
+
+    //get cart by user
+    router.get(`/carts/user/:id`, async (req, res, next) => {
+        const UserIdSchema = z.string();
+
+        const userId = req.params["id"];
+
+        try {
+            UserIdSchema.parse(userId);
+        } catch {
+            res.status(400).json({
+                status: "failed",
+                message: `Invalid value for ID parameter. Got: ${userId}`,
+            });
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                `${CART_API_HOST}/carts/user/${userId}`
+            );
+
+            if (response.status === 404) {
+                res.status(404).json({
+                    status: "failed",
+                    reason: `Couldn't find cart for ${userId}`,
+                });
+            }
+
+            const data = await response.json();
+            console.log(data);
+            res.json({
+                status: "success",
+                data: { cartId: data.cartId },
+            });
+        } catch {
+            res.status(502).json({
+                status: "failed",
+                message: "Failed to get cart",
+            });
+            return;
+        }
+    });
 
     //get cart data
     router.get(`/carts/:id`, async (req, res, next) => {
@@ -37,11 +88,16 @@ export function createDesktopAppRouter() {
         }
 
         try {
-            const response = await fetch(
-                `${CART_API_HOST}/carts/${cartId}`
-            ).then((resp) => resp.json());
+            const response = await fetch(`${CART_API_HOST}/carts/${cartId}`);
 
-            const data = response;
+            if (response.status === 404) {
+                res.status(404).json({
+                    status: "failed",
+                    reason: `Couldn't find cart ${cartId}`,
+                });
+            }
+
+            const data = await response.json();
 
             res.json({
                 status: "success",
@@ -53,6 +109,103 @@ export function createDesktopAppRouter() {
                 message: "Failed to get cart",
             });
             return;
+        }
+    });
+
+    //create a new cart for user
+    router.post(`/carts`, async (req, res) => {
+        const CartUserSchema = z.object({
+            userId: z.string(),
+        });
+
+        const newCartBody = req.body;
+
+        try {
+            CartUserSchema.parse(newCartBody);
+        } catch {
+            res.status(400).json({
+                status: "failed",
+                message: `Invalid value for ID parameter. Got: ${JSON.stringify(
+                    newCartBody
+                )}`,
+            });
+            return;
+        }
+
+        try {
+            const response = await fetch(`${CART_API_HOST}/carts/`, {
+                method: "POST",
+                body: JSON.stringify(newCartBody),
+                headers: new Headers({ "content-type": "application/json" }),
+            });
+
+            if (response.status === 404) {
+                res.status(404).json({
+                    status: "failed",
+                    reason: `Couldn't find cart ${newCartBody}`,
+                });
+            }
+
+            const data = await response.json();
+
+            if (!response.status.toString().startsWith("20")) {
+                res.status(response.status).json({
+                    status: "failed",
+                    message: data.reason || data.message,
+                });
+                return;
+            }
+
+            console.log(data);
+            res.json({
+                status: "success",
+                data: { cartId: data.cartId },
+            });
+        } catch {
+            res.status(502).json({
+                status: "failed",
+                message: "Failed to create cart",
+            });
+            return;
+        }
+    });
+
+    router.post("/carts/:id/products", async (req, res, next) => {
+        try {
+            AddProductRequestValidator.parse(req.body);
+        } catch {
+            res.status(400).json({
+                status: "failed",
+                message: `Invalid request body.`,
+            });
+            return;
+        }
+
+        try {
+            const cartId = req.params["id"];
+            const response = await fetch(
+                `${CART_API_HOST}/carts/${cartId}/products`
+            );
+
+            const status = response.status;
+            const data = await response.json();
+            if (!status.toString().startsWith("20")) {
+                res.status(status).json({
+                    status: "failed",
+                    message: data.reason || data.message,
+                });
+
+                return;
+            }
+
+            res.json({
+                status: "sucess",
+            });
+        } catch {
+            res.status(502).json({
+                status: "failed",
+                message: "Failed to update the cart",
+            });
         }
     });
 
@@ -100,9 +253,16 @@ export function createDesktopAppRouter() {
             // http://localhost:3001/products/0dae6160-005f-4f80-bf95-19ab2563138e
             const response = await fetch(
                 `${PRODUCT_API_HOST}/products/${productId}`
-            ).then((resp) => resp.json());
+            );
 
-            const data = response;
+            if (response.status === 404) {
+                res.status(404).json({
+                    status: "failed",
+                    reason: `Couldn't find cart ${productId}`,
+                });
+            }
+
+            const data = await response.json();
 
             delete data["reservations"];
 
