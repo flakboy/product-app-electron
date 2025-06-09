@@ -21,7 +21,9 @@ const AddProductRequestValidator = z.object({
     price: z.number(),
 });
 
-type AddProductRequestSchema = z.infer<typeof AddProductRequestValidator>;
+const DeleteProductRequestValidator = z.object({
+    productId: z.string(),
+});
 
 export function createDesktopAppRouter() {
     const router = Router();
@@ -58,7 +60,6 @@ export function createDesktopAppRouter() {
             }
 
             const data = await response.json();
-            console.log(data);
             res.json({
                 status: "success",
                 data: { cartId: data.cartId },
@@ -171,6 +172,7 @@ export function createDesktopAppRouter() {
         }
     });
 
+    //add product to cart
     router.post("/carts/:id/products", async (req, res, next) => {
         try {
             console.log(req.body);
@@ -185,8 +187,21 @@ export function createDesktopAppRouter() {
 
         try {
             const cartId = req.params["id"];
+            const { price, amount, id } = req.body;
+
             const response = await fetch(
-                `${CART_API_HOST}/carts/${cartId}/products`
+                `${CART_API_HOST}/carts/${cartId}/products`,
+                {
+                    method: "POST",
+                    headers: new Headers({
+                        "content-type": "application/json",
+                    }),
+                    body: JSON.stringify({
+                        price,
+                        amount,
+                        productId: id,
+                    }),
+                }
             );
 
             const status = response.status;
@@ -201,6 +216,57 @@ export function createDesktopAppRouter() {
             }
 
             console.log(data);
+
+            res.json({
+                status: "sucess",
+            });
+        } catch {
+            res.status(502).json({
+                status: "failed",
+                message: "Failed to update the cart",
+            });
+        }
+    });
+
+    //remove product from cart
+    router.delete("/carts/:id/products", async (req, res, next) => {
+        try {
+            DeleteProductRequestValidator.parse(req.body);
+        } catch {
+            res.status(400).json({
+                status: "failed",
+                message: `Invalid request body.`,
+            });
+            return;
+        }
+
+        try {
+            const cartId = req.params["id"];
+            const { productId } = req.body;
+
+            const response = await fetch(
+                `${CART_API_HOST}/carts/${cartId}/products`,
+                {
+                    method: "DELETE",
+                    headers: new Headers({
+                        "content-type": "application/json",
+                    }),
+                    body: JSON.stringify({
+                        productId,
+                    }),
+                }
+            );
+
+            const status = response.status;
+            const data = await response.json();
+            if (!status.toString().startsWith("20")) {
+                res.status(status).json({
+                    status: "failed",
+                    message: data.reason || data.message,
+                });
+
+                return;
+            }
 
             res.json({
                 status: "sucess",

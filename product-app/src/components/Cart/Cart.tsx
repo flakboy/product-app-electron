@@ -20,8 +20,8 @@ export default function Cart() {
             <div className={s.cartList}>
                 <h2> Selected products </h2>
 
-                {Object.values(cart).map((item: CartItem) => (
-                    <div key={item.id} className={s.cartItem}>
+                {Object.entries(cart).map(([key, item]: [string, CartItem]) => (
+                    <div key={key} className={s.cartItem}>
                         <div>
                             <h3 className={s.cartItemLabel}> {item.name}</h3>
                             <p>
@@ -29,7 +29,7 @@ export default function Cart() {
                                 {formatCurrency(item.unitPrice)}
                             </p>
                             <span>
-                                <Link to={`/products/${item.id}`}>
+                                <Link to={`/products/${key}`}>
                                     Details &gt;
                                 </Link>
                             </span>
@@ -37,7 +37,7 @@ export default function Cart() {
                         <div>
                             <button
                                 onClick={() => {
-                                    dispatch(removeProductThunk(item.id));
+                                    dispatch(removeProductThunk(key));
                                 }}
                             >
                                 Remove from cart

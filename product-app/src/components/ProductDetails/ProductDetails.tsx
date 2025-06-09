@@ -21,7 +21,7 @@ export default function ProductDetails() {
         return <MissingIdView />;
     }
 
-    const details = useProductDetails(id);
+    const { details, error } = useProductDetails(id);
     const products = useAppSelector((state) => state.cart.products);
     const dispatch = useAppDispatch();
 
@@ -29,14 +29,15 @@ export default function ProductDetails() {
 
     return (
         <div>
+            {error ? <p>{error}</p> : null}
             <Link to="/products">Back</Link>
-            {details ? (
+            {!error && details ? (
                 <>
                     <h1>{details?.name}</h1>
                     <div>
                         <div className={s.buyWrapper}>
                             <span className={s.buyPrice}>
-                                {formatCurrency(details.price)}$
+                                {formatCurrency(details.unitPrice)}$
                             </span>
 
                             <span> {details.amount} units left. </span>

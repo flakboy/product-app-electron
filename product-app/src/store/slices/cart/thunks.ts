@@ -14,6 +14,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import {
     addProductToCart,
     CartProductResponse,
+    deleteProductFromCart,
     getCartProducts,
     getUserCart,
     postUserCart,
@@ -32,6 +33,8 @@ export const fetchCartThunk = createAsyncThunk<
     const userId = thunkApi.getState().cart.user;
     try {
         const resp = await getUserCart(userId);
+
+        const data = await resp.json();
 
         if (resp.status === 404) {
             const resp = await postUserCart(userId);
@@ -52,7 +55,6 @@ export const fetchCartThunk = createAsyncThunk<
         } else if (!isHttpStatusOk(resp)) {
             throw new Error("Failed to get user cart ID.");
         } else {
-            const data = await resp.json();
             cartId = data.data.cartId;
             setCachedCartId(cartId!);
             console.log("FOUND CART FOR USER:", userId, cartId);
@@ -62,6 +64,8 @@ export const fetchCartThunk = createAsyncThunk<
         console.log("Falling back to: ", thunkApi.getState().cart);
         return { cartId: getCachedCartId(), products: getCachedCart() };
     }
+
+    console.log("CARTID: ", cartId);
 
     try {
         console.log("FETCHING CART PRODUCTS FOR", cartId);
@@ -107,13 +111,24 @@ export const addProductThunk = createAsyncThunk<
     return payload;
 });
 
-export const removeProductThunk = createAsyncThunk(
+export const removeProductThunk = createAsyncThunk<
+    ProductId,
+    ProductId,
+    { state: RootState }
+>(
     "cart/removeProduct",
-    async (payload: ProductId, _): Promise<ProductId> => {
-        //send to API and ignore result
-        // const _response = fetch("...");
+    async (payload: ProductId, thunkApi): Promise<ProductId> => {
+        const cartId = thunkApi.getState().cart.cartId;
 
-        removeCachedCartProduct(payload);
+        if (cartId) {
+            console.log("USUWAM: ", cartId, payload);
+            const resp = await deleteProductFromCart(cartId, payload);
+
+            console.log(resp.json());
+            if (isHttpStatusOk(resp)) {
+                removeCachedCartProduct(payload);
+            }
+        }
 
         return payload;
     }

@@ -38,3 +38,11 @@ export function addProductToCart(cartId: string, cartItem: CartItem) {
         body: JSON.stringify({ price, amount, id }),
     });
 }
+
+export function deleteProductFromCart(cartId: string, productId: string) {
+    return fetch(`${GATEWAY_URL}/carts/${cartId}/products`, {
+        method: "DELETE",
+        headers: new Headers({ "content-type": "application/json" }),
+        body: JSON.stringify({ productId }),
+    });
+}
