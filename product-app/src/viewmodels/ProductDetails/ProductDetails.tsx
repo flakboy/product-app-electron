@@ -1,10 +1,36 @@
-import { useEffect, useState } from "react";
-import { ProductDetails, ProductId } from "../../types/products";
+import { useCallback, useEffect, useState } from "react";
+import {
+    FormattedProductDetails,
+    ProductDetails,
+    ProductId,
+} from "../../types/products";
 import { getProductDetails, isHttpStatusOk } from "../../utils/requests";
+import { currencyToInteger, formatCurrency } from "../../utils/currency";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { addProductThunk } from "../../store/slices/cart/thunks";
 
 export function useProductDetails(id: ProductId) {
-    const [details, setDetails] = useState<ProductDetails | null>(null);
+    const [details, setDetails] = useState<FormattedProductDetails | null>(
+        null
+    );
     const [error, setError] = useState<string | null>(null);
+    const isInCart = useAppSelector(
+        (state) => !!details && details?.id in state.cart.products
+    );
+
+    const dispatch = useAppDispatch();
+    const addToCart = useCallback(
+        (productDetails: FormattedProductDetails, amount: number) => {
+            dispatch(
+                addProductThunk({
+                    ...productDetails,
+                    amount,
+                    unitPrice: currencyToInteger(productDetails.unitPrice),
+                })
+            );
+        },
+        [details]
+    );
 
     const fetchDetails = async (id: ProductId) => {
         const resp = await getProductDetails(id);
@@ -15,7 +41,7 @@ export function useProductDetails(id: ProductId) {
             );
         } else {
             const data = (await resp.json()).data as ProductDetails;
-            setDetails(data);
+            setDetails({ ...data, unitPrice: formatCurrency(data.unitPrice) });
         }
     };
 
@@ -23,5 +49,5 @@ export function useProductDetails(id: ProductId) {
         fetchDetails(id);
     }, []);
 
-    return { details, error };
+    return { details, error, addToCart, isInCart };
 }

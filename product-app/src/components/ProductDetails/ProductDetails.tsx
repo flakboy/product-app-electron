@@ -1,11 +1,8 @@
 import { Link, useParams } from "react-router";
 import { useProductDetails } from "../../viewmodels/ProductDetails/ProductDetails";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { addProductThunk } from "../../store/slices/cart/thunks";
 
 import { useState } from "react";
 import s from "./ProductDetails.module.css";
-import { formatCurrency } from "../../utils/currency";
 
 function MissingIdView() {
     return (
@@ -21,9 +18,7 @@ export default function ProductDetails() {
         return <MissingIdView />;
     }
 
-    const { details, error } = useProductDetails(id);
-    const products = useAppSelector((state) => state.cart.products);
-    const dispatch = useAppDispatch();
+    const { details, error, isInCart, addToCart } = useProductDetails(id);
 
     const [count, setCount] = useState(1);
 
@@ -37,7 +32,7 @@ export default function ProductDetails() {
                     <div>
                         <div className={s.buyWrapper}>
                             <span className={s.buyPrice}>
-                                {formatCurrency(details.unitPrice)}$
+                                {details.unitPrice}$
                             </span>
 
                             <span> {details.amount} units left. </span>
@@ -55,16 +50,9 @@ export default function ProductDetails() {
                                 />
                                 <button
                                     className={s.buyButton}
-                                    disabled={
-                                        details.amount <= 0 || id in products
-                                    }
+                                    disabled={details.amount <= 0 || isInCart}
                                     onClick={() => {
-                                        dispatch(
-                                            addProductThunk({
-                                                ...details,
-                                                amount: count,
-                                            })
-                                        );
+                                        addToCart(details, count);
                                     }}
                                 >
                                     Add to cart

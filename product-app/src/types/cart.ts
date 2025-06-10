@@ -7,3 +7,11 @@ export type CartItem = Pick<Product, "name" | "id" | "unitPrice"> & {
 export type CartItemMap = {
     [key: string]: CartItem;
 };
+
+export type FormattedCartItem = Omit<CartItem, "unitPrice"> & {
+    unitPrice: string;
+};
+
+export type FormattedCartItemMap = {
+    [key: string]: FormattedCartItem;
+};

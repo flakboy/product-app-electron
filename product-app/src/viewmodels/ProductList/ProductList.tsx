@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { fetchProductListThunk } from "../../store/slices/products/thunks";
+import { formatCurrency } from "../../utils/currency";
 
 const useProductList = () => {
     const dispatch = useAppDispatch();
@@ -12,7 +13,9 @@ const useProductList = () => {
 
     return {
         status: "success",
-        products,
+        products: products.map((product) => {
+            return { ...product, unitPrice: formatCurrency(product.unitPrice) };
+        }),
     };
 };
 
